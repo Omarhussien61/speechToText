@@ -51,9 +51,9 @@ class ItemHiddenMenu extends StatelessWidget {
                     .merge(this.selected
                         ? this.selectedStyle ??
                             TextStyle(
-                                color: Colors.white, fontSize: 14)
+                                color: Colors.blue, fontSize: 14)
                         : TextStyle(
-                            color: Colors.white, fontSize: 14)),
+                            color: Colors.blue, fontSize: 14)),
               ),
             )
           ],

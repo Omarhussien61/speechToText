@@ -1,8 +1,6 @@
 {
 
-  "version": "version",
   "start_speaking": "برجاء الضغط ثم التحدث",
-  "gust": "عزيزى الزائر",
-  "good_morning": "صباح الخير",
-  "good_night": "مساء الخير"
+  "AppName": "لا كاسا كود"
+
 }

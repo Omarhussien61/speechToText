@@ -1,8 +1,6 @@
 {
-  "version": "version",
-  "start_speaking": "Press the button and start speaking",
-  "good_morning": "Good Morning",
-  "good_night": "Good Night"
+  "AppName": "la casa code",
+  "start_speaking": "Press the button and start speaking"
 
 
 }

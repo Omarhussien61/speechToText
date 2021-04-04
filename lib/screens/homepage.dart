@@ -1,14 +1,14 @@
-
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_pos/main.dart';
 import 'package:flutter_pos/utils/Provider/provider.dart';
 import 'package:flutter_pos/utils/local/LanguageTranslated.dart';
-import 'package:flutter_pos/utils/service/API.dart';
-import 'package:flutter_pos/widget/hidden_menu.dart';
+import 'package:flutter_pos/utils/screen_size.dart';
+import 'package:flutter_pos/widget/item_hidden_menu.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
-
 
 class Home extends StatefulWidget {
   @override
@@ -16,11 +16,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  bool _loading=false;
+  bool _loading = false;
   stt.SpeechToText _speech;
   bool _isListening = false;
-  String _text ;
+  String _text;
+
   double _confidence = 1.0;
+
   @override
   void initState() {
     super.initState();
@@ -29,13 +31,13 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    final themeColor = Provider.of<Provider_control>(context);
 
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Confidence: ${(_confidence * 100.0).toStringAsFixed(1)}%'),
+        title: Text(getTransrlate(context, 'AppName')),
       ),
-      drawer: HiddenMenu(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: AvatarGlow(
         animate: _isListening,
@@ -46,7 +48,9 @@ class _HomeState extends State<Home> {
         repeat: true,
         child: FloatingActionButton(
           onPressed: _listen,
-          child: Icon(_isListening ? Icons.mic : Icons.mic_none ,),
+          child: Icon(
+            _isListening ? Icons.mic : Icons.mic_none,
+          ),
         ),
       ),
       body: SingleChildScrollView(
@@ -55,18 +59,53 @@ class _HomeState extends State<Home> {
           children: [
             Container(
               padding: const EdgeInsets.fromLTRB(30.0, 30.0, 30.0, 150.0),
-              child: AutoSizeText(
-                _text??getTransrlate(context, 'start_speaking'),
-                minFontSize: 18,
-                maxLines: 4,
-                overflow: TextOverflow.ellipsis,
-                style:  TextStyle(
-                  color: Colors.black,
-                  fontWeight: FontWeight.w400,
-                ),
+              child: Column(
+                children: [
+                  InkWell(
+                    onTap: () async {
+                      await themeColor.local == 'ar'
+                          ? themeColor.setLocal('en')
+                          : themeColor.setLocal('ar');
+                      MyApp.setlocal(
+                          context, Locale(themeColor.getlocal(), ''));
+                      SharedPreferences.getInstance().then((prefs) {
+                        prefs.setString('local', themeColor.local);
+                      });
+                    },
+                    child: ItemHiddenMenu(
+                      icon: Icon(
+                        Icons.language,
+                        size: 25,
+                        color: themeColor.getColor(),
+                      ),
+                      name: Provider.of<Provider_control>(context).local == 'ar'
+                          ? 'English'
+                          : 'عربى',
+                      baseStyle: TextStyle(
+                          fontSize: 19.0, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                  AutoSizeText(
+                    _text ?? getTransrlate(context, 'start_speaking'),
+                    minFontSize: 18,
+                    maxLines: 4,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
               ),
             ),
-            _loading?Expanded(child: Container(child: CircularProgressIndicator(),)):Container()
+            _loading
+                ? Container(
+                    color: Colors.black38,
+                    width: ScreenUtil.getWidth(context),
+                    height: ScreenUtil.getHeight(context),
+                    child: Center(child: CircularProgressIndicator()),
+                  )
+                : Container()
           ],
         ),
       ),
@@ -83,21 +122,20 @@ class _HomeState extends State<Home> {
       if (available) {
         setState(() => _isListening = true);
         _speech.listen(
-          onResult: (val) => setState(() {
-
-            _text = val.recognizedWords;
-            setState(() {_loading=true;});
-            API(context).get("sentence=${val.recognizedWords}").then((){
-              setState(() {_loading=false;});
-
-            });
-            if (val.hasConfidenceRating && val.confidence > 0) {
-              _confidence = val.confidence;
-            }
-          }
-          ),
-          localeId: 'ar'
-        );
+            onResult: (val) => setState(() {
+                  _text = val.recognizedWords;
+                  // setState(() {
+                  //   _loading = true;
+                  // });
+                  // API(context).get("sentence=${val.recognizedWords}").then((){
+                  //   setState(() {_loading=false;});
+                  //
+                  // });
+                  if (val.hasConfidenceRating && val.confidence > 0) {
+                    _confidence = val.confidence;
+                  }
+                }),
+            localeId: Provider.of<Provider_control>(context).local);
       }
     } else {
       setState(() => _isListening = false);
