@@ -1,6 +1,6 @@
 
 import 'package:flutter/material.dart';
-import 'package:flutter_pos/screens/splash_screen.dart';
+import 'package:flutter_pos/screens/homepage.dart';
 import 'package:flutter_pos/utils/Provider/provider.dart';
 import 'package:flutter_pos/utils/local/AppLocalizations.dart';
 import 'package:provider/provider.dart';
@@ -14,18 +14,6 @@ Future<void> main() async {
       child:MyApp(),
     ),
   );
-
-  // OneSignal.shared.setLogLevel(OSLogLevel.verbose, OSLogLevel.none);
-  // OneSignal.shared.init(
-  //     "b2f7f966-d8cc-11e4-bed1-df8f05be55ba",
-  //     iOSSettings: {
-  //       OSiOSSettings.autoPrompt: false,
-  //       OSiOSSettings.inAppLaunchUrl: false
-  //     }
-  // );
-  // OneSignal.shared.setInFocusDisplayType(OSNotificationDisplayType.notification);
-  // await OneSignal.shared.promptUserForPushNotificationPermission(fallbackToSettings: true);
-
 }
 
 
@@ -93,7 +81,7 @@ class _MyAppState extends State<MyApp> {
           behavior: SnackBarBehavior.floating,
         ),
       ),
-      home: SplashScreen(),
+      home: Home(),
     );
   }
 }
