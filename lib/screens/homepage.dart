@@ -74,7 +74,6 @@ class _HomeState extends State<Home> {
   }
 
   void _listen() async {
-    final provider =Provider.of<Provider_control>(context);
 
     if (!_isListening) {
       bool available = await _speech.initialize(
@@ -97,7 +96,7 @@ class _HomeState extends State<Home> {
             }
           }
           ),
-          localeId: provider.local
+          localeId: 'ar'
         );
       }
     } else {
