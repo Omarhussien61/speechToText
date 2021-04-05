@@ -16,33 +16,21 @@ class API {
 
   get(String url) async {
     final String full_url =
-        '${GlobalConfiguration().getString('api_base_url')}$url&locale=${Provider.of<Provider_control>(context).getlocal()}&debug=true';
+        'http://3.215.29.146/api/analyze/?sentence=%7B$url%7D&locale=ar-eg&debug=true';
     try {
-      print(full_url);
-
       http.Response response = await http.get(full_url, headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/json; charset=utf-8',
         'Accept': 'application/json',
+      'Authorization': 'Token afdd74768a63495d54839847ffd85685c5c72d3b',
       });
-      print(response.body);
-      if (response.statusCode == 500) {
-        Nav.route(
-            context,
-            Maintenance(
-              erorr: response.body,
-            ));
-      } else if (response.statusCode == 404) {
-        Nav.route(
-            context,
-            Maintenance(
-              erorr: full_url + '\n' + response.body,
-            ));
-      } else {
-        return jsonDecode(response.body);
-      }
+      if(response.statusCode==200)
+       {
+         return json.decode(utf8.decode(response.bodyBytes));
+       }
+
     } catch (e) {
       print(e);
-      Nav.route(context, Maintenance());
+      return e;
     } finally {}
   }
 }

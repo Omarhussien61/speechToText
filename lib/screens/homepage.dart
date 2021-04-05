@@ -5,6 +5,8 @@ import 'package:flutter_pos/main.dart';
 import 'package:flutter_pos/utils/Provider/provider.dart';
 import 'package:flutter_pos/utils/local/LanguageTranslated.dart';
 import 'package:flutter_pos/utils/screen_size.dart';
+import 'package:flutter_pos/utils/service/API.dart';
+import 'package:flutter_pos/widget/coustme_dialog.dart';
 import 'package:flutter_pos/widget/item_hidden_menu.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -113,7 +115,6 @@ class _HomeState extends State<Home> {
   }
 
   void _listen() async {
-
     if (!_isListening) {
       bool available = await _speech.initialize(
         onStatus: (val) => print('onStatus: $val'),
@@ -124,15 +125,26 @@ class _HomeState extends State<Home> {
         _speech.listen(
             onResult: (val) => setState(() {
                   _text = val.recognizedWords;
-                  // setState(() {
-                  //   _loading = true;
-                  // });
-                  // API(context).get("sentence=${val.recognizedWords}").then((){
-                  //   setState(() {_loading=false;});
-                  //
-                  // });
                   if (val.hasConfidenceRating && val.confidence > 0) {
                     _confidence = val.confidence;
+                    setState(() {
+                      _loading = true;
+                    });
+                    API(context).get(val.recognizedWords).then((value) {
+                      setState(() {
+                        _loading = false;
+                        _isListening = false;
+                      });
+                      if(value!=null){
+                      print(value);
+                        showDialog(
+                            context: context,
+                            builder: (_) => RusultOverlay(
+                              title: "${value['response']==null?' ':value['response']['text']}",
+                              Content: "${value['item']==null?' ':value['item']['name_ar']}",
+                            ));
+                      }
+                    });
                   }
                 }),
             localeId: Provider.of<Provider_control>(context).local);
