@@ -141,7 +141,7 @@ class _HomeState extends State<Home> {
                             context: context,
                             builder: (_) => RusultOverlay(
                               title: "${value['response']==null?' ':value['response']['text']}",
-                              Content: "${value['item']==null?' ':value['item']['name_ar']}",
+                              Content: "${value['item']==null?' ':Provider.of<Provider_control>(context).local == 'ar'?value['item']['name_ar']:value['item']['name']}",
                             ));
                       }
                     });
